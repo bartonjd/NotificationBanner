@@ -69,20 +69,29 @@ namespace LogonAcceptanceWindow
             Height = SystemParameters.PrimaryScreenHeight;
             double sr = Width / Height;
             double br = LayBodyArea.ActualWidth / 280;
+            OverScroll.MaxHeight = LayBodyArea.ActualHeight * .6;
 
-            //var currentMonitor = Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
+            NoticeTitle.FontSize *= 1.25;
+            NoticeTitle.MaxWidth *= 1.25;
+            NoticeText.FontSize *= 1.25;
+            NoticeText.MaxWidth *= 1.25;
 
-            /*MessageBox.Show("The font is: " + NoticeText + " and DPI is: " , "Ratio", MessageBoxButton.OK, MessageBoxImage.Information);*/
-            //NoticeTitleText.FontSize = NoticeTitleText.FontSize * 1.25;
+            NoticeBanner.Visibility = Visibility.Visible;
 
-            NoticeTitleText.FontSize = NoticeTitleText.FontSize * 1.25;
-                        NoticeText.FontSize = NoticeText.FontSize * 1.25 ;
-                        NoticeText.MaxWidth = NoticeText.MaxWidth * 1.25 ;
+            string? title = Reg.GetString(@"HKLM:\SOFTWARE\LawBanner", "NotificationTitle");
+            NoticeTitle.Content = title;
+
+            //Retrieve Notification Text from Registry (Set via Group Policy), Handle new lines (\n)
+            string[]? text = Reg.GetMultiString(@"HKLM:\SOFTWARE\LawBanner", "NotificationText");
+            string? noticeText = String.Join(System.Environment.NewLine, value: text);
+            NoticeText.Text = noticeText.Replace("\\n", Environment.NewLine);
+
             //Get background color, lighten and use as button color 
             Color bg = (NoticeBanner.Background as SolidColorBrush).Color;
             Color newBg = Utils.AdjustColorBrightness((System.Drawing.Color.FromArgb(bg.A, bg.R, bg.G, bg.B)), .18);
             AcceptBtn.Background = new SolidColorBrush(newBg);
-            NoticeBanner.Visibility = Visibility.Visible;
+            AcceptBtn.Height *= 1.1;
+            
             //AcceptBtn.Foreground = Utils.AdjustColorBrightness(NoticeBanner.Background.,0.25);
 
 
@@ -90,6 +99,7 @@ namespace LogonAcceptanceWindow
             //WindowState = WindowState.Maximized;
             //Topmost = true;
             // Other stuff here
+
         }
 
         private void OnClosing(object sender, CancelEventArgs e)

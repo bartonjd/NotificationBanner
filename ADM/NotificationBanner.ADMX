@@ -1,0 +1,35 @@
+<policyDefinitions revision="1.0" schemaVersion="1.0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <policyNamespaces>
+        <target prefix="Call4cloud" namespace="MSC.Policies.6ADA35ED_CDB9_4EB3_A449_276845EF4B1B"/>
+        <using prefix="windows" namespace="Microsoft.Policies.Windows"/>
+    </policyNamespaces>
+    <supersededAdm fileName=""/>
+    <resources minRequiredRevision="1.0" fallbackCulture="en-US"/>
+    <categories>
+        <category name="CAT_Notification_Banner" displayName="$(string.CAT_Notification_Banner)" explainText="$(string.CAT_Notification_Banner_HELP)"/>
+        <category name="CAT_Notification_Banner_Settings" displayName="$(string.CAT_Notification_Banner_Settings)" explainText="$(string.CAT_Notification_Banner_Settings_HELP)">
+            <parentCategory ref="CAT_Notification_Banner"/>
+        </category>
+    </categories>
+    <policies>
+        <policy name="POL_Notification_Settings" displayName="$(string.POL_Notification_Settings)" explainText="$(string.POL_Notification_Settings_HELP)" key="SOFTWARE\LawBanner" class="Machine" presentation="$(presentation.POL_Notification_Settings)">
+            <parentCategory ref="CAT_Notification_Banner_Settings"/>
+            <supportedOn ref="windows:SUPPORTED_WindowsVista"/>
+            <elements>
+                <text id="TXT_Notification_Title" valueName="NotificationTitle"/>
+                 <text id="TXT_Notification_Banner_BgColor" valueName="BannerBgColor"/>
+                 <text id="TXT_Notification_Banner_TextColor" valueName="NotificationTextColor"/>
+            </elements>
+        </policy>
+        <policy name="POL_Notification_Text" displayName="$(string.POL_Notification_Text)" explainText="$(string.POL_Notification_Text_HELP)" key="SOFTWARE\LawBanner" class="Machine" presentation="$(presentation.POL_Notification_Text)">
+            <parentCategory ref="CAT_Notification_Banner_Settings"/>
+            <supportedOn ref="windows:SUPPORTED_WindowsVista"/>
+            <elements>
+               <multiText id="MTXT_Notification_Text" valueName="NotificationText" maxStrings="30"/>
+            </elements>
+        </policy>
+
+    </policies>
+</policyDefinitions>

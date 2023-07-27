@@ -60,5 +60,20 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <ControlTemplate x:Key="SwatchButtonTemplate" TargetType="{x:Type Button}" x:Name="BtnStyle">
+            <Border Name="OuterBorder" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource BorderBrush}" Background="{TemplateBinding Background}">
+                <Border Name="InnerBorder" BorderThickness="0" BorderBrush="White" Background="{TemplateBinding Background}">
+                    <ContentPresenter/>
+                </Border>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="InnerBorder" Property="BorderThickness" Value="1" />
+                </Trigger>
+                <DataTrigger Binding="{Binding Path=Background.Color, RelativeSource={RelativeSource Self}}" Value="#00ffffff">
+                    <Setter TargetName="InnerBorder" Property="Background" Value="{StaticResource transparent_swatch_brush}" />
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Application.Resources>
 </Application>

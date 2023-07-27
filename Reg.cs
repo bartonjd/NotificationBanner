@@ -29,10 +29,16 @@ namespace LogonAcceptanceWindow
             }
             return Double.Parse((String)value);
         }
+        static public String[]? GetMultiString(String Path, String Property)
+        {
+            Path = FormatPath(Path);
+            String[]? value = (string[]?)Registry.GetValue(Path, Property, "");
+            return value;
+        }
         static public String? GetString(String Path, String Property)
         {
             Path = FormatPath(Path);
-            String? value = (string?)Registry.GetValue(Path, Property, "");
+            String? value = (string)Registry.GetValue(Path, Property, "");
             return value;
         }
         static public Boolean PropertyExists(String Path, String Property)
