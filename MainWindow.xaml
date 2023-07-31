@@ -1,4 +1,5 @@
 ﻿<Window x:Class="LogonAcceptanceWindow.MainWindow"
+
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,7 +13,7 @@
         Width="1000"
         WindowState="Maximized"
         WindowStyle="None"
-        Background="#005a9e">
+        Background="#FF005a9e">
     <Window.Resources>
         
         
@@ -49,10 +50,9 @@
     -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
                 </TextBlock>
             </ScrollViewer>
-            <Button Style="{DynamicResource BannerButtonStyle}" Name="AcceptBtn" Width="90" Margin="0,20,0,-4" HorizontalAlignment="Left" Background="#FF337BB1" Foreground="White" FontWeight="SemiBold" Click="AcceptBtn_Click">
-                <Button.ContentTemplateSelector>
-                    <DataTemplateSelector/>
-                </Button.ContentTemplateSelector> OK</Button>
+            <Button  Name="AcceptBtn" Width="90" Margin="0,20,0,-4" HorizontalAlignment="Left" Background="#FF337BB1" Foreground="White" FontWeight="SemiBold" Click="AcceptBtn_Click" Loaded="AcceptBtn_Loaded">
+ OK
+            </Button>
         </StackPanel>
         
     </Grid>

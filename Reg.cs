@@ -19,6 +19,20 @@ namespace LogonAcceptanceWindow
             }
             return value;
         }
+
+        static public bool GetBoolFromInt(String Path, String Property)
+        {
+            Path = FormatPath(Path);
+            Int32? value = (Int32?)Registry.GetValue(Path, Property, -1);
+            if ((value == -1) || (null == value))
+            {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
         static public Double GetDouble(String Path, String Property)
         {
             Path = FormatPath(Path);
@@ -41,6 +55,13 @@ namespace LogonAcceptanceWindow
             String? value = (string)Registry.GetValue(Path, Property, "");
             return value;
         }
+
+        static public dynamic? GetValue(String Path, String Property)
+        {
+            Path = FormatPath(Path);
+            var value = Registry.GetValue(Path, Property, "");
+            return value;
+        }
         static public Boolean PropertyExists(String Path, String Property)
         {
             Path = FormatPath(Path);
@@ -52,6 +73,17 @@ namespace LogonAcceptanceWindow
             }
             return true;
         }
+        static public Dictionary<string,dynamic> GetProperties(String Path, String[] properties ) { 
+            Dictionary<string,dynamic> results = new Dictionary<string,dynamic>();
+
+            foreach (string property in properties) { 
+                var prop = GetValue(Path, property);
+                results.Add(property, (null != prop) ? prop : "");
+            }
+
+            return results;
+        }
+
         static private String GetHiveName(String Path)
         {
             Path = Path.Replace(":", "");

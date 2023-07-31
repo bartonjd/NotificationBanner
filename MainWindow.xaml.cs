@@ -14,8 +14,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Resources;
 using System.Management;
+using System.Windows.Markup;
 using System.Diagnostics;
+using System.Reflection;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace LogonAcceptanceWindow
 {
@@ -37,12 +42,35 @@ namespace LogonAcceptanceWindow
             };
         }
     }
+    public static class Themes
+    {
+        public const  String CustomTheme = "CustomTheme";
+        public const  String Windows10 = "Windows10";
+        public const String Windows11 = "Windows11";
+        public static String[] BtnStyleProperties = new String[] {
+            "Btn.Color",
+            "Btn.HoverColor",
+            "Btn.BorderColor",
+            "Btn.MouseDownColor",
+            "Btn.BorderMouseDownColor",
+            "Btn.BorderHoverColor",
+            "Btn.TextColor",
+        };
+    }
+
     public partial class MainWindow : Window
     {
+
+        private string? Namespace;
+        private const String FALLBACKTHEME = Themes.Windows10;
+        private const string REGISTRYROOT = @"HKLM:\SOFTWARE\NotificationBanner\";
+        public string BackgroundColor = "Red";
+
 
         public MainWindow()
         {
             InitializeComponent();
+            this.Namespace = this.GetType().Namespace;
             Loaded += OnLoaded;
             //Closing += OnClosing;
             //StateChanged += OnStateChanged;
@@ -51,25 +79,26 @@ namespace LogonAcceptanceWindow
             //LostMouseCapture += (sender, args) => Mouse.Capture(this);
             //LostKeyboardFocus += (sender, args) => Keyboard.Focus(this);
             //PreviewLostKeyboardFocus += (sender, args) => Keyboard.Focus(this);
-            
+
 
         }
 
-        public double[] GetDpiScale() {
+        public double[] GetDpiScale()
+        {
             Matrix m = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice;
             double dpiX = m.M11;
             double dpiY = m.M22;
 
-            return new[] { dpiX , dpiY};
-            
+            return new[] { dpiX, dpiY };
+
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight;
-            double sr = Width / Height;
-            double br = LayBodyArea.ActualWidth / 280;
-            OverScroll.MaxHeight = LayBodyArea.ActualHeight * .6;
+
+
+            OverScroll.MaxHeight = LayBodyArea.ActualHeight * .65;
 
             NoticeTitle.FontSize *= 1.25;
             NoticeTitle.MaxWidth *= 1.25;
@@ -78,20 +107,17 @@ namespace LogonAcceptanceWindow
 
             NoticeBanner.Visibility = Visibility.Visible;
 
-            string? title = Reg.GetString(@"HKLM:\SOFTWARE\LawBanner", "NotificationTitle");
+            string? title = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Title");
             NoticeTitle.Content = title;
 
             //Retrieve Notification Text from Registry (Set via Group Policy), Handle new lines (\n)
-            string[]? text = Reg.GetMultiString(@"HKLM:\SOFTWARE\LawBanner", "NotificationText");
+            string[]? text = Reg.GetMultiString(@"HKLM:\SOFTWARE\NotificationBanner", "Text");
             string? noticeText = String.Join(System.Environment.NewLine, value: text);
             NoticeText.Text = noticeText.Replace("\\n", Environment.NewLine);
 
-            //Get background color, lighten and use as button color 
-            Color bg = (NoticeBanner.Background as SolidColorBrush).Color;
-            Color newBg = Utils.AdjustColorBrightness((System.Drawing.Color.FromArgb(bg.A, bg.R, bg.G, bg.B)), .18);
-            AcceptBtn.Background = new SolidColorBrush(newBg);
+
             AcceptBtn.Height *= 1.1;
-            
+
             //AcceptBtn.Foreground = Utils.AdjustColorBrightness(NoticeBanner.Background.,0.25);
 
 
@@ -99,6 +125,28 @@ namespace LogonAcceptanceWindow
             //WindowState = WindowState.Maximized;
             //Topmost = true;
             // Other stuff here
+
+        }
+
+        private void AcceptBtn_Loaded(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+
+            string? theme = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Theme");
+            string? ButtonColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "ButtonColor");
+            string? BackgroundColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "BackgroundColor");
+            string? ButtonTextColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "TextColor");
+
+
+
+
+            var str = GetThemeStyle();
+
+            button.Style = (Style)XamlReader.Parse(str);
+            //button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ButtonColor));
+            //button.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ButtonTextColor));
+            //NoticeBanner.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(BackgroundColor));
+
 
         }
 
@@ -115,8 +163,88 @@ namespace LogonAcceptanceWindow
 
         private void AcceptBtn_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine(AcceptBtn.Template.ToString());
             this.Close();
         }
+        private string GetTheme()
+        {
+            string? theme = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Theme");
+            bool customTheme = Reg.GetBoolFromInt(@"HKLM:\SOFTWARE\NotificationBanner", "CustomTheme");
+
+            if (null == theme)
+            {
+                theme = MainWindow.FALLBACKTHEME;
+            }
+
+            if (customTheme == true)
+            {
+                return theme;
+            }
+            else
+            {
+
+                return theme;
+            }
+
+            //ResourceManager rm = new ResourceWriter($"{Namespace}.Windows10Theme", Assembly.GetExecutingAssembly());
+            // foreach (DictionaryEntry entry in resourceSet)
+        }
+        private string GetThemeResource(String themeName) {
+
+            return $"{Namespace}.{themeName}Theme";
+        }
+        private dynamic GetThemeStyle()
+        {
+            string configuredTheme = this.GetTheme();
+            string themeXaml = "";
+            SolidColorBrush TextColor, BackgroundColor, BtnTextColor;
+            if (configuredTheme == Themes.CustomTheme)
+            {
+                //Get Dictionary of custom style values from registry
+                var themeStyles = Reg.GetProperties($"{REGISTRYROOT}Style\\{configuredTheme}", Themes.BtnStyleProperties);
+                themeXaml = ButtonStyle.Tpl;
+                foreach (KeyValuePair<string, dynamic> style in themeStyles)
+                {
+                    themeXaml = themeXaml.Replace($"{{style.Key}}", style.Value);
+                }
+                TextColor = Utils.GetColorBrush(themeStyles["TextColor"]);
+                BackgroundColor = Utils.GetColorBrush(themeStyles["BackgroundColor"]);
+                BtnTextColor = Utils.GetColorBrush(themeStyles["Btn.TextColor"]);
+            }
+            else
+            {
+                themeXaml = ButtonStyle.Tpl;
+                ResourceManager themeResource = new ResourceManager(GetThemeResource(configuredTheme), Assembly.GetExecutingAssembly());
+                //Replace curly brace values in template with values stored in theme resource file which are button related
+                
+                foreach (string styleProperty in Themes.BtnStyleProperties)
+                {
+                   // if (btnPattern.Matches(styleProperty))
+                    themeXaml = themeXaml.Replace($"[{styleProperty}]",themeResource.GetString(styleProperty));
+                }
+                TextColor = Utils.GetColorBrush(themeResource.GetString("TextColor"));
+                BackgroundColor = Utils.GetColorBrush(themeResource.GetString("BackgroundColor"));
+                BtnTextColor = Utils.GetColorBrush(themeResource.GetString("Btn.TextColor"));
+
+            }
+
+            NoticeBanner.Background = BackgroundColor;
+            NoticeTitle.Foreground = TextColor;
+            NoticeText.Foreground = TextColor;
+            AcceptBtn.Foreground = BtnTextColor;
+
+            if (themeXaml == "")
+            {
+                //Handle error message
+                this.Close();
+            }
+            return themeXaml;
+        }
+
+
+
+
+
     }
 
 }

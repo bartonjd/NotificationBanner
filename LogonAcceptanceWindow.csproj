@@ -16,4 +16,37 @@
     <PackageReference Include="System.Management" Version="7.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Windows11Theme.Designer.cs">
+      <DependentUpon>Windows11Theme.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Windows10Theme.Designer.cs">
+      <DependentUpon>Windows10Theme.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="ButtonStyle.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ButtonStyle.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Windows11Theme.resx">
+      <LastGenOutput>Windows11Theme.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Windows10Theme.resx">
+      <LastGenOutput>Windows10Theme.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ButtonStyle.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ButtonStyle.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
