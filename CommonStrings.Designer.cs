@@ -22,14 +22,14 @@ namespace LogonAcceptanceWindow {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ButtonStyle {
+    internal class CommonStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ButtonStyle() {
+        internal CommonStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace LogonAcceptanceWindow {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LogonAcceptanceWindow.ButtonStyle", typeof(ButtonStyle).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LogonAcceptanceWindow.CommonStrings", typeof(CommonStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -68,9 +68,39 @@ namespace LogonAcceptanceWindow {
         ///            &lt;Setter Property=&quot;BorderThickness&quot; Value=&quot;2&quot;/&gt;
         ///            &lt;Setter Property=&quot;HorizontalC [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Tpl {
+        internal static string ButtonTpl {
             get {
-                return ResourceManager.GetString("Tpl", resourceCulture);
+                return ResourceManager.GetString("ButtonTpl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+        ///    By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+        ///    -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to,  penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+        ///   [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DefaultText {
+            get {
+                return ResourceManager.GetString("DefaultText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows10.
+        /// </summary>
+        internal static string DefaultTheme {
+            get {
+                return ResourceManager.GetString("DefaultTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US Department of Defense Warning Statement.
+        /// </summary>
+        internal static string DefaultTitle {
+            get {
+                return ResourceManager.GetString("DefaultTitle", resourceCulture);
             }
         }
     }

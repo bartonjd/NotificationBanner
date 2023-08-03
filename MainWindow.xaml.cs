@@ -21,6 +21,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Windows.Threading;
+using System.Xml.Linq;
+using System.Runtime.InteropServices;
 
 namespace LogonAcceptanceWindow
 {
@@ -63,8 +66,9 @@ namespace LogonAcceptanceWindow
 
         private string? Namespace;
         private const String FALLBACKTHEME = Themes.Windows10;
-        private const string REGISTRYROOT = @"HKLM:\SOFTWARE\NotificationBanner\";
-        public string BackgroundColor = "Red";
+        private const string REGISTRYROOT = @"HKLM:\SOFTWARE\";
+        private const string KEYNAME = @"NotificationBanner";
+        private const string REGISTRYPATH = $"{REGISTRYROOT}{KEYNAME}\\";
 
 
         public MainWindow()
@@ -72,12 +76,12 @@ namespace LogonAcceptanceWindow
             InitializeComponent();
             this.Namespace = this.GetType().Namespace;
             Loaded += OnLoaded;
-            //Closing += OnClosing;
-            //StateChanged += OnStateChanged;
-            //Deactivated += (sender, args) => Activate();
-            //LostFocus += (sender, args) => Focus();
-            //LostMouseCapture += (sender, args) => Mouse.Capture(this);
-            //LostKeyboardFocus += (sender, args) => Keyboard.Focus(this);
+/*            Closing += OnClosing;
+            StateChanged += OnStateChanged;
+            Deactivated += (sender, args) => Activate();
+            LostFocus += (sender, args) => Focus();
+            LostMouseCapture += (sender, args) => Mouse.Capture(this);
+            LostKeyboardFocus += (sender, args) => Keyboard.Focus(this);*/
             //PreviewLostKeyboardFocus += (sender, args) => Keyboard.Focus(this);
 
 
@@ -94,6 +98,14 @@ namespace LogonAcceptanceWindow
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            bool isEnabled = Reg.GetBoolFromInt($"{REGISTRYPATH}", "EnableBanner");
+            //If banner is disabled in group policy/registry exit now
+            if (!isEnabled) {
+                this.Exit();
+                return;
+            }
+            this.Focus();
+            string? title = Reg.GetString($"{REGISTRYPATH}", "Title");
             Width = SystemParameters.PrimaryScreenWidth;
             Height = SystemParameters.PrimaryScreenHeight;
 
@@ -107,11 +119,10 @@ namespace LogonAcceptanceWindow
 
             NoticeBanner.Visibility = Visibility.Visible;
 
-            string? title = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Title");
             NoticeTitle.Content = title;
 
             //Retrieve Notification Text from Registry (Set via Group Policy), Handle new lines (\n)
-            string[]? text = Reg.GetMultiString(@"HKLM:\SOFTWARE\NotificationBanner", "Text");
+            string[]? text = Reg.GetMultiString(REGISTRYPATH, "Text");
             string? noticeText = String.Join(System.Environment.NewLine, value: text);
             NoticeText.Text = noticeText.Replace("\\n", Environment.NewLine);
 
@@ -121,10 +132,10 @@ namespace LogonAcceptanceWindow
             //AcceptBtn.Foreground = Utils.AdjustColorBrightness(NoticeBanner.Background.,0.25);
 
 
-            //WindowStyle = WindowStyle.None;
-            //WindowState = WindowState.Maximized;
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
             //Topmost = true;
-            // Other stuff here
+            //Other stuff here
 
         }
 
@@ -132,21 +143,7 @@ namespace LogonAcceptanceWindow
         {
             var button = sender as Button;
 
-            string? theme = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Theme");
-            string? ButtonColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "ButtonColor");
-            string? BackgroundColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "BackgroundColor");
-            string? ButtonTextColor = Reg.GetString($@"HKLM:\SOFTWARE\NotificationBanner\Style\{theme}", "TextColor");
-
-
-
-
-            var str = GetThemeStyle();
-
-            button.Style = (Style)XamlReader.Parse(str);
-            //button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ButtonColor));
-            //button.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ButtonTextColor));
-            //NoticeBanner.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(BackgroundColor));
-
+            SetThemeStyle();
 
         }
 
@@ -163,13 +160,12 @@ namespace LogonAcceptanceWindow
 
         private void AcceptBtn_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine(AcceptBtn.Template.ToString());
-            this.Close();
+            this.Exit();
         }
         private string GetTheme()
         {
-            string? theme = Reg.GetString(@"HKLM:\SOFTWARE\NotificationBanner", "Theme");
-            bool customTheme = Reg.GetBoolFromInt(@"HKLM:\SOFTWARE\NotificationBanner", "CustomTheme");
+            string? theme = Reg.GetString(REGISTRYPATH, "Theme");
+            bool customTheme = Reg.GetBoolFromInt(REGISTRYPATH, "CustomTheme");
 
             if (null == theme)
             {
@@ -182,27 +178,24 @@ namespace LogonAcceptanceWindow
             }
             else
             {
-
                 return theme;
             }
 
-            //ResourceManager rm = new ResourceWriter($"{Namespace}.Windows10Theme", Assembly.GetExecutingAssembly());
-            // foreach (DictionaryEntry entry in resourceSet)
         }
         private string GetThemeResource(String themeName) {
 
             return $"{Namespace}.{themeName}Theme";
         }
-        private dynamic GetThemeStyle()
+        private void SetThemeStyle()
         {
             string configuredTheme = this.GetTheme();
             string themeXaml = "";
-            SolidColorBrush TextColor, BackgroundColor, BtnTextColor;
+            SolidColorBrush TextColor, BackgroundColor, BtnColor, BtnTextColor;
             if (configuredTheme == Themes.CustomTheme)
             {
                 //Get Dictionary of custom style values from registry
-                var themeStyles = Reg.GetProperties($"{REGISTRYROOT}Style\\{configuredTheme}", Themes.BtnStyleProperties);
-                themeXaml = ButtonStyle.Tpl;
+                var themeStyles = Reg.GetProperties($"{REGISTRYPATH}\\CustomTheme", Themes.BtnStyleProperties);
+                themeXaml = CommonStrings.ButtonTpl;
                 foreach (KeyValuePair<string, dynamic> style in themeStyles)
                 {
                     themeXaml = themeXaml.Replace($"{{style.Key}}", style.Value);
@@ -210,21 +203,22 @@ namespace LogonAcceptanceWindow
                 TextColor = Utils.GetColorBrush(themeStyles["TextColor"]);
                 BackgroundColor = Utils.GetColorBrush(themeStyles["BackgroundColor"]);
                 BtnTextColor = Utils.GetColorBrush(themeStyles["Btn.TextColor"]);
+                BtnColor = Utils.GetColorBrush(themeStyles["Btn.Color"]);
             }
             else
             {
-                themeXaml = ButtonStyle.Tpl;
+                themeXaml = CommonStrings.ButtonTpl;
                 ResourceManager themeResource = new ResourceManager(GetThemeResource(configuredTheme), Assembly.GetExecutingAssembly());
-                //Replace curly brace values in template with values stored in theme resource file which are button related
+                //Replace square brace values in template with values stored in theme resource file which are button related
                 
-                foreach (string styleProperty in Themes.BtnStyleProperties)
+                foreach (String styleProperty in Themes.BtnStyleProperties)
                 {
-                   // if (btnPattern.Matches(styleProperty))
                     themeXaml = themeXaml.Replace($"[{styleProperty}]",themeResource.GetString(styleProperty));
                 }
                 TextColor = Utils.GetColorBrush(themeResource.GetString("TextColor"));
                 BackgroundColor = Utils.GetColorBrush(themeResource.GetString("BackgroundColor"));
                 BtnTextColor = Utils.GetColorBrush(themeResource.GetString("Btn.TextColor"));
+                BtnColor = Utils.GetColorBrush(themeResource.GetString("Btn.Color"));
 
             }
 
@@ -232,19 +226,25 @@ namespace LogonAcceptanceWindow
             NoticeTitle.Foreground = TextColor;
             NoticeText.Foreground = TextColor;
             AcceptBtn.Foreground = BtnTextColor;
+            AcceptBtn.Background = BtnColor;
 
             if (themeXaml == "")
             {
                 //Handle error message
-                this.Close();
+                this.Exit();
             }
-            return themeXaml;
+            AcceptBtn.Style = (Style)XamlReader.Parse(themeXaml);
         }
+        private void Window_Show() {
 
+        }
+        private void Exit()
+        {
 
-
-
-
+            Process.Start("userinit.exe");
+            this.Close();
+            System.Environment.Exit(0);
+        }
     }
 
 }

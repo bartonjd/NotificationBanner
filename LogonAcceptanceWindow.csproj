@@ -27,10 +27,10 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="ButtonStyle.Designer.cs">
+    <Compile Update="CommonStrings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ButtonStyle.resx</DependentUpon>
+      <DependentUpon>CommonStrings.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -43,9 +43,9 @@
       <LastGenOutput>Windows10Theme.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="ButtonStyle.resx">
+    <EmbeddedResource Update="CommonStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ButtonStyle.Designer.cs</LastGenOutput>
+      <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

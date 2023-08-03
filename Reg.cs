@@ -24,12 +24,16 @@ namespace LogonAcceptanceWindow
         {
             Path = FormatPath(Path);
             Int32? value = (Int32?)Registry.GetValue(Path, Property, -1);
-            if ((value == -1) || (null == value))
+            if (value <= 0)
             {
                 return false;
             }
-            else {
+            else if (value > 0)
+            {
                 return true;
+            }
+            else {
+                return false;
             }
         }
 
@@ -188,28 +192,29 @@ namespace LogonAcceptanceWindow
             }
             return Path;
         }
-        static public void NewKey(String Path, String KeyName = "")
+        static public void NewKey(String Path, String KeyName)
         {
-            //Can accept a path or a path and keyname for ease of use.
-            if (!KeyExists(Path))
+            string fullPath = ($"{Path}\\{KeyName}").Replace(@"\\", @"\");
+            var hive = GetHive(Path);
+            if (!KeyExists(fullPath))
             {
                 if (KeyName != "")
                 {
                     //Ensure keyname is at the end of the path if it was provided
-                    Path = Path + @"\" + KeyName;
                     Path = RelativizePath(FormatPath(Path));
                 }
-                GetHive(Path).CreateSubKey(KeyName);
+                var key = hive.OpenSubKey(Path,true);
+                key.CreateSubKey(KeyName);
             }
         }
-        static public void SetProperty(String Path, String Property, String Value)
+        static public void SetProperty(String Path, String Property, dynamic Value)
         {
 
         }
-        static public void SetProperty(String Path, String Property, Int32 Value)
+/*        static public void SetProperty(String Path, String Property, Int32 Value)
         {
 
-        }
+        }*/
         static public void DeleteKey(String Path)
         {
 

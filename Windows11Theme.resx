@@ -120,11 +120,11 @@
   <data name="BackgroundColor" xml:space="preserve">
     <value>#FF000000</value>
   </data>
-  <data name="Bt.nBorderHoverColor" xml:space="preserve">
-    <value>#FF888888</value>
-  </data>
   <data name="Btn.BorderColor" xml:space="preserve">
     <value>#FFEEEEEE</value>
+  </data>
+  <data name="Btn.BorderHoverColor" xml:space="preserve">
+    <value>#FF888888</value>
   </data>
   <data name="Btn.BorderMouseDownColor" xml:space="preserve">
     <value>#FFEEEEEE</value>
@@ -136,7 +136,7 @@
     <value>#FF000000</value>
   </data>
   <data name="Btn.MouseDownColor" xml:space="preserve">
-    <value>#FF222222</value>
+    <value>#FF555555</value>
   </data>
   <data name="Btn.TextColor" xml:space="preserve">
     <value>#FFFFFFFF</value>

@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Tpl" xml:space="preserve">
+  <data name="ButtonTpl" xml:space="preserve">
     <value>&lt;Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TargetType="{x:Type Button}"&gt;
             &lt;Setter Property="Background" Value="[Btn.Color]"/&gt;
             &lt;Setter Property="BorderBrush" Value="[Btn.BorderColor]"/&gt;
@@ -130,8 +130,8 @@
                 &lt;Setter.Value&gt;
                     &lt;ControlTemplate TargetType="{x:Type Button}"&gt;
 
-                        &lt;Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="[Btn.BorderColor]" BorderThickness="1.5" SnapsToDevicePixels="true"&gt;
-                            &lt;Border x:Name="innerborder" Background="{TemplateBinding Background}" Margin="1"  BorderBrush="[Btn.Color]" BorderThickness="1" SnapsToDevicePixels="true"&gt;
+                        &lt;Border x:Name="innerborder" Background="{TemplateBinding Background}" BorderBrush="[Btn.BorderColor]" BorderThickness="1.5" SnapsToDevicePixels="true"&gt;
+                            &lt;Border x:Name="border" Background="{TemplateBinding Background}" Margin="1"  BorderBrush="[Btn.Color]" BorderThickness="1" SnapsToDevicePixels="true"&gt;
                                 &lt;ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/&gt;
                             &lt;/Border&gt;
                         &lt;/Border&gt;
@@ -150,5 +150,20 @@
                 &lt;/Setter.Value&gt;
             &lt;/Setter&gt;
         &lt;/Style&gt;</value>
+  </data>
+  <data name="DefaultText" xml:space="preserve">
+    <value>You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+    By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+    -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to,  penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+    -At any time, the USG may inspect and seize data stored on this IS.
+    -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+    -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+    -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.</value>
+  </data>
+  <data name="DefaultTheme" xml:space="preserve">
+    <value>Windows10</value>
+  </data>
+  <data name="DefaultTitle" xml:space="preserve">
+    <value>US Department of Defense Warning Statement</value>
   </data>
 </root>

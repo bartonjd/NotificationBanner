@@ -70,20 +70,20 @@ namespace LogonAcceptanceWindow {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #FF888888.
-        /// </summary>
-        internal static string Bt_nBorderHoverColor {
-            get {
-                return ResourceManager.GetString("Bt.nBorderHoverColor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to #FFEEEEEE.
         /// </summary>
         internal static string Btn_BorderColor {
             get {
                 return ResourceManager.GetString("Btn.BorderColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #FF888888.
+        /// </summary>
+        internal static string Btn_BorderHoverColor {
+            get {
+                return ResourceManager.GetString("Btn.BorderHoverColor", resourceCulture);
             }
         }
         
@@ -115,7 +115,7 @@ namespace LogonAcceptanceWindow {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #FF222222.
+        ///   Looks up a localized string similar to #FF555555.
         /// </summary>
         internal static string Btn_MouseDownColor {
             get {

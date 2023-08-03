@@ -14,20 +14,26 @@
         </category>
     </categories>
     <policies>
-        <policy name="POL_Notification_Settings" displayName="$(string.POL_Notification_Settings)" explainText="$(string.POL_Notification_Settings_HELP)" key="SOFTWARE\LawBanner" class="Machine" presentation="$(presentation.POL_Notification_Settings)">
+        <policy name="POL_Notification_Settings" displayName="$(string.POL_Notification_Settings)" valueName="EnableBanner" explainText="$(string.POL_Notification_Settings_HELP)" key="SOFTWARE\NotificationBanner" class="Machine" presentation="$(presentation.POL_Notification_Settings)">
             <parentCategory ref="CAT_Notification_Banner_Settings"/>
             <supportedOn ref="windows:SUPPORTED_WindowsVista"/>
+            <enabledValue>
+                <decimal value="1" />
+            </enabledValue>
+            <disabledValue>
+                <decimal value="0" />
+            </disabledValue>
             <elements>
-                <text id="TXT_Notification_Title" valueName="NotificationTitle"/>
-                 <text id="TXT_Notification_Banner_BgColor" valueName="BannerBgColor"/>
-                 <text id="TXT_Notification_Banner_TextColor" valueName="NotificationTextColor"/>
+                <text id="TXT_Notification_Title" valueName="Title"/>
+                <multiText id="MTXT_Notification_Text" valueName="Text" maxStrings="30"/>                
             </elements>
         </policy>
-        <policy name="POL_Notification_Text" displayName="$(string.POL_Notification_Text)" explainText="$(string.POL_Notification_Text_HELP)" key="SOFTWARE\LawBanner" class="Machine" presentation="$(presentation.POL_Notification_Text)">
+
+        <policy name="POL_Notification_Theme" displayName="$(string.POL_Notification_Theme)"  explainText="$(string.POL_Notification_Theme_HELP)" key="SOFTWARE\NotificationBanner" class="Machine" presentation="$(presentation.POL_Notification_Theme)">
             <parentCategory ref="CAT_Notification_Banner_Settings"/>
             <supportedOn ref="windows:SUPPORTED_WindowsVista"/>
             <elements>
-               <multiText id="MTXT_Notification_Text" valueName="NotificationText" maxStrings="30"/>
+               <text id="STY_Theme" valueName="Theme"/>
             </elements>
         </policy>
 
