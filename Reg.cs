@@ -56,8 +56,14 @@ namespace LogonAcceptanceWindow
         static public String? GetString(String Path, String Property)
         {
             Path = FormatPath(Path);
-            String? value = (string)Registry.GetValue(Path, Property, "");
-            return value;
+            var value = Registry.GetValue(Path, Property, "");
+            if (value is not null)
+            {
+                return (string)value;
+            }
+            else {
+                return "";
+            }
         }
 
         static public dynamic? GetValue(String Path, String Property)
@@ -78,11 +84,11 @@ namespace LogonAcceptanceWindow
             return true;
         }
         static public Dictionary<string,dynamic> GetProperties(String Path, String[] properties ) { 
-            Dictionary<string,dynamic> results = new Dictionary<string,dynamic>();
+            Dictionary<string,dynamic> results = new ();
 
             foreach (string property in properties) { 
                 var prop = GetValue(Path, property);
-                results.Add(property, (null != prop) ? prop : "");
+                results.Add(property, prop ?? "");
             }
 
             return results;
@@ -133,34 +139,16 @@ namespace LogonAcceptanceWindow
 
         static private RegistryKey GetHive(String Path)
         {
-            RegistryKey hive;
-
-            switch (GetHiveName(Path))
+            return GetHiveName(Path) switch
             {
-                case "HKEY_LOCAL_MACHINE":
-                    hive = Registry.LocalMachine;
-                    break;
-                case "HKEY_CURRENT_USER":
-                    hive = Registry.CurrentUser;
-                    break;
-                case "HKEY_CLASSES_ROOT":
-                    hive = Registry.ClassesRoot;
-                    break;
-                case "HKEY_USERS":
-                    hive = Registry.Users;
-                    break;
-                case "HKEY_CURRENT_CONFIG":
-                    hive = Registry.CurrentConfig;
-                    break;
-                case "HKEY_PERFORMANCE_DATA":
-                    hive = Registry.PerformanceData;
-                    break;
-                default:
-                    //If string doesn't match assume HKLM was intended
-                    hive = Registry.LocalMachine;
-                    break;
-            }
-            return hive;
+                "HKEY_LOCAL_MACHINE" => Registry.LocalMachine,
+                "HKEY_CURRENT_USER" => Registry.CurrentUser,
+                "HKEY_CLASSES_ROOT" => Registry.ClassesRoot,
+                "HKEY_USERS" => Registry.Users,
+                "HKEY_CURRENT_CONFIG" => Registry.CurrentConfig,
+                "HKEY_PERFORMANCE_DATA" => Registry.PerformanceData,
+                _ => Registry.LocalMachine, //If string doesn't match assume HKLM was intended
+            };
         }
         static public Boolean KeyExists(String Path)
         {
@@ -179,7 +167,7 @@ namespace LogonAcceptanceWindow
             Path = Path.Replace(":", "");
             //Ensure there are no double \ after concatenation or @ escaping
             Path = Path.Replace(@"\\", @"\");
-            String hiveName = "";
+            String hiveName;
 
             //Get the hivename (string before the first \)
             Regex whichHiveRegEx = new(@"(\w+)(?=\\)");
@@ -204,24 +192,29 @@ namespace LogonAcceptanceWindow
                     Path = RelativizePath(FormatPath(Path));
                 }
                 var key = hive.OpenSubKey(Path,true);
-                key.CreateSubKey(KeyName);
+                if (key is not null)
+                {
+                    key.CreateSubKey(KeyName);
+                }
+                else {
+                    throw new Exception("No such key");
+                }
             }
         }
+        /*
         static public void SetProperty(String Path, String Property, dynamic Value)
         {
-
+            //Not implemented yet
         }
-/*        static public void SetProperty(String Path, String Property, Int32 Value)
-        {
-
-        }*/
+   
         static public void DeleteKey(String Path)
         {
-
+            //Not implemented yet
         }
         static public void DeleteProperty()
         {
-
+            //Not implemented yet
         }
+        */
     }
 }
